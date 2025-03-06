@@ -1,0 +1,28 @@
+name: Frontend Build / Lint / Test
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Filter by paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          base: ${{ github.event.merge_group.base_ref}}
+          ref: ${{ github.event.merge_group.head_ref }}
+          filters: |
+            frontend:
+              - 'frontend/**'
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
