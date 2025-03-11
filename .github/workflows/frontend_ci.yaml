@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Filter by paths
-        uses: ./.github/composite/change-detector.yaml
+        uses: ./.github/composite/change-detector
         id: filter
         with:
           target-directories: frontend
