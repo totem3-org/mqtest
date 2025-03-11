@@ -1,0 +1,47 @@
+name: 'Directory Change Detector'
+description: Detects changes in specified directories and outputs whether changes were found
+
+inputs:
+  target-directories:
+    description: Comma-separated list of directories to check for changes
+    type: string
+    required: true
+
+outputs:
+  has_changes:
+    description: Boolean indicating whether changes were detected
+    value: ${{ steps.check-changes.outputs.changes_detected }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+
+    - name: Check for changes in specified directories
+      id: check-changes
+      shell: bash
+      run: |
+        BASE_SHA=$(git rev-parse HEAD~1 2>/dev/null || git rev-list --max-parents=0 HEAD)
+        HEAD_SHA=$(git rev-parse HEAD)
+        
+        IFS=',' read -ra DIRS <<< "${{ inputs.target-directories }}"
+        
+        CHANGES_DETECTED=false
+        
+        for DIR in "${DIRS[@]}"; do
+          DIR=$(echo $DIR | xargs)
+        
+          echo "Checking directory: $DIR"
+        
+          CHANGES=$(git diff --name-only $BASE_SHA $HEAD_SHA -- $DIR)
+        
+          if [ -n "$CHANGES" ]; then
+            echo "Changes detected in $DIR"
+            CHANGES_DETECTED=true
+          fi
+        done
+        
+        echo "changes_detected=$CHANGES_DETECTED" >> $GITHUB_OUTPUT
