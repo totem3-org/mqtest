@@ -25,7 +25,9 @@ runs:
       shell: bash
       run: |
         BASE_SHA=$(git rev-parse HEAD~1 2>/dev/null || git rev-list --max-parents=0 HEAD)
+        echo "BASE_SHA: ${BASE_SHA}"
         HEAD_SHA=$(git rev-parse HEAD)
+        echo "HEAD_SHA: ${HEAD_SHA}"
         
         IFS=',' read -ra DIRS <<< "${{ inputs.target-directories }}"
         
@@ -44,4 +46,5 @@ runs:
           fi
         done
         
+        echo "changes_detected=$CHANGES_DETECTED"
         echo "changes_detected=$CHANGES_DETECTED" >> $GITHUB_OUTPUT

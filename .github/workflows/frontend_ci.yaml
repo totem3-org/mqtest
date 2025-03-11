@@ -16,13 +16,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Filter by paths
-        uses: dorny/paths-filter@v3
+        uses: ./.github/composite/change-detector
         id: filter
         with:
-          base: ${{ github.event.merge_group.base_ref}}
-          ref: ${{ github.event.merge_group.head_ref }}
-          filters: |
-            frontend:
-              - 'frontend/**'
+          target-directories: frontend
     outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
+      frontend: ${{ steps.filter.outputs.has_changes }}
