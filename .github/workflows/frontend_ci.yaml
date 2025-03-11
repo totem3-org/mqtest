@@ -11,7 +11,6 @@ concurrency:
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
-    using: composite
     steps:
       - name: Check out
         uses: actions/checkout@v4
